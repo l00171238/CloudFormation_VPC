@@ -1,5 +1,5 @@
 # orchestration of VPC, InternetGateway 
-AWSTemplateFormatVersion: "2022-11-06"
+AWSTemplateFormatVersion: "2022-06-11"
 Parameters:
   VPCCidrBlock:
     Type: String
