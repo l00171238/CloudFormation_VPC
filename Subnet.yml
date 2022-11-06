@@ -1,0 +1,61 @@
+# This Templet is for creating route table integrated in four subnets. 
+Parameters:
+  Pubsubnet1CIDR:
+    Description: CIDR notation for first public subnet " Maharashtra"
+    Default: 10.0.0.0/27
+    Type:  string
+  Pubsubnet2CIDR:
+    Description: CIDR notation for Second public subnet "Delhi"
+    Default: 10.0.0.32/27
+    Type:  string
+  Prisubnet1CIDR:
+    Description: CIDR notation for first private subnet "Uttar pradesh"
+    Default: 10.0.0.64/27
+    Type:  string
+  Prisubnet2CIDR:
+    Description: CIDR notation for Second Private subnet "Punjab"
+    Default: 10.0.0.126/27
+    Type:  string
+
+Resources:
+#this is Public subnet 1 
+  Maharashtra:
+   Type: AWS::EC2::Subnet
+   Properties:
+     VpcId: !Ref India
+     CidrBlock: !Ref Pubsubnet1CIDR
+     AvailabilityZone: "eu-west-1a"
+     Tags:
+       - Key: Name
+         Value: Jumpbox 
+#this is Public subnet 2 
+  Delhi:
+   Type: AWS::EC2::Subnet
+   Properties:
+     VpcId: !Ref India
+     CidrBlock: !Ref Pubsubnet2CIDR
+     AvailabilityZone: "eu-west-1a"
+     Tags:
+       - Key: Name
+         Value: webserver 
+#this is Private subnet 1 
+  UttarPradesh:
+   Type: AWS::EC2::Subnet
+   Properties:
+     VpcId: !Ref India
+     CidrBlock: !Ref Prisubnet1CIDR
+     AvailabilityZone: "eu-west-1b"
+     Tags:
+       - Key: Name
+         Value: Database
+#this is Private subnet 2 
+  Punjab:
+   Type: AWS::EC2::Subnet
+   Properties:
+     VpcId: !Ref India
+     CidrBlock: !Ref Prisubnet2CIDR
+     AvailabilityZone: "eu-west-1b"
+     Tags:
+       - Key: Name
+         Value: app_front_face 
+
