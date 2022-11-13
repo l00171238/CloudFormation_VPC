@@ -1,5 +1,12 @@
 # This Templet is for creating route table integrated in four subnets.
 Parameters:
+  VPCId:
+    Description: Name of VPC Id from Output
+    Type: String
+  GatewayId:
+    Description: Name of Gateway Id from Output
+    Type: String
+
   India:
     Description: TEST
     Type: String
@@ -8,7 +15,7 @@ Parameters:
     Default: 10.0.0.0/27
     Type: String
   Pubsubnet2CIDR:
-    Description: CIDR notation for Second public subnet "Delhi"
+    Description: CIDR notation for Second public subnet "Gujurat"
     Default: 10.0.0.32/27
     Type: String
   Prisubnet1CIDR:
@@ -32,7 +39,7 @@ Resources:
         - Key: Name
           Value: Jumpbox
   #this is Public subnet 2
-  Delhi:
+  Gujurat:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref India
@@ -81,7 +88,7 @@ Resources:
   RoadofIndia:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      subnetId: !Ref Delhi 
+      subnetId: !Ref Gujurat 
 
 
   RoadofIndia:

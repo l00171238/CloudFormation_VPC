@@ -1,45 +1,83 @@
 # This YML creates Instances based on the regions for the VPC called India in all the subnets called States
 Parameters:
+  VPCId:
+    Description: Name of VPC Id from Output
+    Type: String
+  GatewayId:
+    Description: Name of Gateway Id from Output
+    Type: String
+
   InstanceEnv:
     Description: This is for mapping the instance image and region
     Type: String
     AllowedValues:
       - "Prod"
-      - 
+      - "Dev"
+    ConstraintDescription: Allowed values are Dev or Prod
 
 Mappings:
   RegionAMI:
     us-east-1:
-      ami-0ff8a91507f77f867
+      AMI: ami-0ff8a91507f77f867
     us-east-2:
-      ami-0b59bfac6be064b78
+      AMI: ami-0b59bfac6be064b78
     us-west-1:
-      ami-0bdb828fd58c52235
+      AMI: ami-0bdb828fd58c52235
     us-west-2:
-      ami-a0cfeed8
+      AMI: ami-a0cfeed8
     ap-south-1:
-      ami-0912f71e06545ad88
+      AMI: ami-0912f71e06545ad88
     ap-northeast-3:
-      ami-0708689cfc3edb71d
+      AMI: ami-0708689cfc3edb71d
     ap-northeast-2:
-      ami-0a10b2721688ce9d2
+      AMI: ami-0a10b2721688ce9d2
     ap-southeast-1:
-      ami-08569b978cc4dfa10
+      AMI: ami-08569b978cc4dfa10
     ap-southeast-2:
-      ami-09b42976632b27e9b
+      AMI: ami-09b42976632b27e9b
     ap-northeast-1:
-      ami-06cd52961ce9f0d85
+      AMI: ami-06cd52961ce9f0d85
     ca-central-1:
-     ami-0b18956f
-    eu-central-1: 
-    ami-0233214e13e500f77
-    eu-west-1: 
-    ami-047bb4163c506cd98
-    eu-west-2: 
-    ami-f976839e
-    eu-west-3: 
-    ami-0ebc281c20e89ba4b
+      AMI: ami-0b18956f
+    eu-central-1:
+      AMI: ami-0233214e13e500f77
+    eu-west-1:
+      AMI: ami-047bb4163c506cd98
+    eu-west-2:
+      AMI: ami-f976839e
+    eu-west-3:
+      AMI: ami-0ebc281c20e89ba4b
     eu-north-1:
-     ami-05c42683296709b61
-    sa-east-1: 
-    ami-07b14488da8ea02a0
+      AMI: ami-05c42683296709b61
+    sa-east-1:
+      AMI: ami-07b14488da8ea02a0
+  EnvToInstanceType:
+    Dev:
+      instanceType: t2.micro
+    Pro:
+      instanceType: t2.large
+Resources:
+  instanceMumbai:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+  instanceGujurat:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+  instanceLucknow:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+  instanceAmritsar:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]

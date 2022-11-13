@@ -6,6 +6,12 @@ Parameters:
   Indiavpc:
     Description: this is for reference
     Type: String
+  VPCId:
+    Description: Name of VPC Id from Output
+    Type: String
+  GatewayId:
+    Description: Name of Gateway Id from Output
+    Type: String
 
 #creating VPC by the name of India
 Resources:
