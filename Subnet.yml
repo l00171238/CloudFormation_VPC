@@ -1,61 +1,127 @@
-# This Templet is for creating route table integrated in four subnets. 
+# This Templet is for creating route table integrated in four subnets.
 Parameters:
+  India:
+    Description: TEST
+    Type: String
   Pubsubnet1CIDR:
     Description: CIDR notation for first public subnet " Maharashtra"
     Default: 10.0.0.0/27
-    Type:  string
+    Type: String
   Pubsubnet2CIDR:
     Description: CIDR notation for Second public subnet "Delhi"
     Default: 10.0.0.32/27
-    Type:  string
+    Type: String
   Prisubnet1CIDR:
     Description: CIDR notation for first private subnet "Uttar pradesh"
     Default: 10.0.0.64/27
-    Type:  string
+    Type: String
   Prisubnet2CIDR:
     Description: CIDR notation for Second Private subnet "Punjab"
     Default: 10.0.0.126/27
-    Type:  string
+    Type: String
 
 Resources:
-#this is Public subnet 1 
+  #this is Public subnet 1
   Maharashtra:
-   Type: AWS::EC2::Subnet
-   Properties:
-     VpcId: !Ref India
-     CidrBlock: !Ref Pubsubnet1CIDR
-     AvailabilityZone: "eu-west-1a"
-     Tags:
-       - Key: Name
-         Value: Jumpbox 
-#this is Public subnet 2 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Pubsubnet1CIDR
+      AvailabilityZone: "eu-west-1a"
+      Tags:
+        - Key: Name
+          Value: Jumpbox
+  #this is Public subnet 2
   Delhi:
-   Type: AWS::EC2::Subnet
-   Properties:
-     VpcId: !Ref India
-     CidrBlock: !Ref Pubsubnet2CIDR
-     AvailabilityZone: "eu-west-1a"
-     Tags:
-       - Key: Name
-         Value: webserver 
-#this is Private subnet 1 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Pubsubnet2CIDR
+      AvailabilityZone: "eu-west-1a"
+      Tags:
+        - Key: Name
+          Value: webserver
+  #this is Private subnet 1
   UttarPradesh:
-   Type: AWS::EC2::Subnet
-   Properties:
-     VpcId: !Ref India
-     CidrBlock: !Ref Prisubnet1CIDR
-     AvailabilityZone: "eu-west-1b"
-     Tags:
-       - Key: Name
-         Value: Database
-#this is Private subnet 2 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId:
+      CidrBlock: !Ref Prisubnet1CIDR
+      AvailabilityZone: "eu-west-1b"
+      Tags:
+        - Key: Name
+          Value: Database
+  #this is Private subnet 2
   Punjab:
-   Type: AWS::EC2::Subnet
-   Properties:
-     VpcId: !Ref India
-     CidrBlock: !Ref Prisubnet2CIDR
-     AvailabilityZone: "eu-west-1b"
-     Tags:
-       - Key: Name
-         Value: app_front_face 
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Prisubnet2CIDR
+      AvailabilityZone: "eu-west-1b"
+      Tags:
+        - Key: Name
+          Value: app_front_face
 
+  # creating Route and Route table
+  RouteTable:
+    Type: AWS::EC2:RouteTable
+    Properties:
+      VpcId:
+        fn::ImportValue: !Ref India
+      Tags:
+        - Key: Name
+          Value: !Ref India_Road
+  
+  # Associating routetable with subnets 
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref Maharashtra 
+      
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref Delhi 
+
+
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref UttarPradesh 
+
+
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref Punjab 
+
+
+  Type: AWS::EC2::Route
+  Properties: 
+    CarrierGatewayId: String
+    RouteTableId: !Ref RoadofIndia
+    DestinationCidrBlock: 0.0.0.0/0
+    GatewayId: Fn::ImportValue: !Ref Ocean
+
+
+Outputs:
+  Pubsubnet1:
+    Description: Public Subnet 1 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PublicSubnet1
+      Value: !Ref Pubsubnet 1
+  Pubsubnet2:
+    Description: Public Subnet 2 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PublicSubnet2
+      Value: !Ref Pubsubnet 2
+  Prisubnet1:
+    Description: Public Subnet 1 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PrivateSubnet1
+      Value: !Ref Prisubnet 1
+  Prisubnet2:
+    Description: Public Subnet 2 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PrivateSubnet2
+      Value: !Ref Prisubnet 2

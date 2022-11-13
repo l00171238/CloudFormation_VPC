@@ -1,15 +1,17 @@
-# orchestration of VPC, InternetGateway 
+# orchestration of VPC, InternetGateway
 Parameters:
   VPCCidrBlock:
     Type: String
     Default: 10.0.0.0/25
+  Indiavpc:
+    Description: this is for reference
+    Type: String
 
-  
-#creating VPC by the name of India 
+#creating VPC by the name of India
 Resources:
   India:
     Type: AWS::EC2::VPC
-    Properties: 
+    Properties:
       CidrBlock: !Ref VPCCidrBlock
       EnableDnsHostnames: true
       EnableDnsSupport: true
@@ -17,22 +19,26 @@ Resources:
       Tags:
         - Key: VPCId
           Value: India
-# Creating IGW by the name of Ocean
+  # Creating IGW by the name of Ocean
   Ocean:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: Ocean     
-# Attaching India to Ocean
+          Value: Ocean
+  # Attaching India to Ocean
   VPCattachIGW:
-   Type: AWS::EC2::VPCGatewayAttachment
-   Properties:
-     InternetGatewayId: !Ref Ocean
-     VpcId: !Ref India
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref Ocean
+      VpcId: !Ref India
 
-#exports  
+  #Importing the  Subnet stack
+  importStates:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://assignementvpc.s3.eu-west-1.amazonaws.com/Subnet.yml
 Outputs:
   India:
-   Description: A ref to created VPC 
-   Value: !Ref India
+    Description: A ref to created VPC
+    Value: !Ref India
