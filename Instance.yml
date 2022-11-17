@@ -1,5 +1,8 @@
 # This YML creates Instances based on the regions for the VPC called India in all the subnets called States
 Parameters:
+   Indiavpc:
+    Description: this is for reference
+    Type: String
   VPCId:
     Description: Name of VPC Id from Output
     Type: String
@@ -60,24 +63,47 @@ Resources:
   instanceMumbai:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType:
-        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
       ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      VPCId: !Ref VPCId
+      GatewayId: !Ref GatewayId
+      SubnetId: 
+        
+
   instanceGujurat:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType:
-        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
       ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      VPCId: 
+      GatewayId:
+      SubnetId: 
+      InstanceName:
+      InstanceKeyName:
+        
+  
+        
   instanceLucknow:
-    Type: AWS::EC2::Instance
+   Type: AWS::EC2::Instance
     Properties:
-      InstanceType:
-        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
       ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      VPCId: 
+      GatewayId:
+      SubnetId: 
+      InstanceName:
+        
+  
+    
+        
   instanceAmritsar:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType:
-        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
       ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      VPCId: 
+      GatewayId:
+      SubnetId: 
+      InstanceName:
+      InstanceKeyName:
+        

@@ -1,0 +1,186 @@
+# orchestration of VPC, InternetGateway
+Parameters:
+  VPCCidrBlock:
+    Type: String
+    Default: 10.0.0.0/25
+  Indiavpc:
+    Description: this is for reference
+    Type: String
+  VPCId:
+    Description: Name of VPC Id from Output
+    Type: String
+  GatewayId:
+    Description: Name of Gateway Id from Output
+    Type: String
+  
+  #subnet.yml
+  VPCId:
+    Description: Name of VPC Id from Output
+    Type: String
+  GatewayId:
+    Description: Name of Gateway Id from Output
+    Type: String
+  India:
+    Description: TEST
+    Type: String
+  Pubsubnet1CIDR:
+    Description: CIDR notation for first public subnet " Maharashtra"
+    Default: 10.0.0.0/27
+    Type: String
+  Pubsubnet2CIDR:
+    Description: CIDR notation for Second public subnet "Gujurat"
+    Default: 10.0.0.32/27
+    Type: String
+  Prisubnet1CIDR:
+    Description: CIDR notation for first private subnet "Uttar pradesh"
+    Default: 10.0.0.64/27
+    Type: String
+  Prisubnet2CIDR:
+    Description: CIDR notation for Second Private subnet "Punjab"
+    Default: 10.0.0.126/27
+    Type: String
+
+#creating VPC by the name of India
+Resources:
+  India:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPCCidrBlock
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: VPCId
+          Value: India
+  # Creating IGW by the name of Ocean
+  Ocean:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Ocean
+  # Attaching India to Ocean
+  VPCattachIGW:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref Ocean
+      VpcId: !Ref India
+
+  #Importing the  Subnet stack
+  importStates:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://assignementvpc.s3.eu-west-1.amazonaws.com/Subnet.yml
+
+#Subnet resources 
+ #this is Public subnet 1
+  Maharashtra:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Pubsubnet1CIDR
+      AvailabilityZone: "eu-west-1a"
+      Tags:
+        - Key: Name
+          Value: Jumpbox
+  #this is Public subnet 2
+  Gujurat:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Pubsubnet2CIDR
+      AvailabilityZone: "eu-west-1a"
+      Tags:
+        - Key: Name
+          Value: webserver
+  #this is Private subnet 1
+  UttarPradesh:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Prisubnet1CIDR
+      AvailabilityZone: "eu-west-1b"
+      Tags:
+        - Key: Name
+          Value: Database
+  #this is Private subnet 2
+  Punjab:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref India
+      CidrBlock: !Ref Prisubnet2CIDR
+      AvailabilityZone: "eu-west-1b"
+      Tags:
+        - Key: Name
+          Value: app_front_face
+
+  # creating Route and Route table
+  RouteTable:
+    Type: AWS::EC2:RouteTable
+    Properties:
+      VpcId:
+        fn::ImportValue: !Ref India
+      Tags:
+        - Key: Name
+          Value: !Ref India_Road
+  
+  # Associating routetable with subnets 
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref Maharashtra 
+      
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref Gujurat 
+
+
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref UttarPradesh 
+
+
+  RoadofIndia:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      subnetId: !Ref Punjab 
+
+
+  Type: AWS::EC2::Route
+  Properties: 
+    CarrierGatewayId: String
+    RouteTableId: !Ref RoadofIndia
+    DestinationCidrBlock: 0.0.0.0/0
+    GatewayId: Fn::ImportValue: !Ref Ocean
+
+
+
+Outputs:
+  India:
+    Description: A ref to created VPC
+    Value: !Ref India
+
+## subnet 
+
+  Pubsubnet1:
+    Description: Public Subnet 1 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PublicSubnet1
+      Value: !Ref Pubsubnet 1
+  Pubsubnet2:
+    Description: Public Subnet 2 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PublicSubnet2
+      Value: !Ref Pubsubnet 2
+  Prisubnet1:
+    Description: Public Subnet 1 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PrivateSubnet1
+      Value: !Ref Prisubnet 1
+  Prisubnet2:
+    Description: Public Subnet 2 ID
+    Export:
+      Name: !Sub ${AWS::StackName}--PrivateSubnet2
+      Value: !Ref Prisubnet 2
