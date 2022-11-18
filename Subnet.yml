@@ -3,10 +3,10 @@ Parameters:
     Description: this is VPC
     Type: String
     Default: IndiaVPC
-  # Pubsubnet1CIDR:
-  #   Description: Public subnet notation
-  #   Default: 10.0.0.0/27
-  #   Type: String
+  VpcStackName:
+    Description: vpc
+    Default: IndiaVPC
+    Type: String
 
 Resources:
   # Public subnet1
@@ -19,7 +19,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Public Subnet 1
-      VpcId: !Ref IndiaVPC
+      VpcId:
+        Fn::ImportValue: VPCId
     # Public subnet 2
   Pubsub2:
     Type: AWS::EC2::Subnet
@@ -30,7 +31,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Public Subnet 2
-      VpcId: !Ref IndiaVPC
+      VpcId:
+        Fn::ImportValue: VPCId
       # PRivate subnet1
   Prisub1:
     Type: AWS::EC2::Subnet
@@ -41,7 +43,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Private Subnet 1
-      VpcId: !Ref IndiaVPC
+      VpcId:
+        Fn::ImportValue: !Sub VPCId
     # Public subnet 2
   Prisub2:
     Type: AWS::EC2::Subnet
@@ -52,7 +55,8 @@ Resources:
       Tags:
         - Key: Name
           Value: Private Subnet 2
-      VpcId: !Ref IndiaVPC
+      VpcId:
+        Fn::ImportValue: VPCId
 
 Outputs:
   Publicsubnet1:
@@ -73,5 +77,5 @@ Outputs:
   Privatesubnet2:
     Description: Private Subnet 2 ID
     Export:
-      Name: !Sub ${AWS::StackName}-Privatesubnet1
-    Value: PrivateSubnet1
+      Name: !Sub ${AWS::StackName}-Privatesubnet2
+    Value: PrivateSubnet2

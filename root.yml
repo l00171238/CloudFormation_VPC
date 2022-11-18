@@ -1,0 +1,29 @@
+Parameters:
+  VPCCidrBlock:
+    Type: String
+    Default: 10.0.0.0/25
+  IndiaVPC:
+    Description: this is for reference
+    Type: String
+    Default: IndiaVPC
+  VpcStackName:
+    Description: vpc
+    Default: VPC
+    Type: String
+
+Resources:
+  VPC:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://assignementvpc.s3.eu-west-1.amazonaws.com/VPC.yml
+      Parameters:
+        VPCid: !Ref IndiaVPC
+        VPCCidrBlock: !Ref VPCCidrBlock
+  subnets:
+    DependsOn: VPC
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://assignementvpc.s3.eu-west-1.amazonaws.com/Subnet.yml
+      Parameters:
+        IndiaVPC: !Ref IndiaVPC
+        VpcStackName: !Ref VpcStackName

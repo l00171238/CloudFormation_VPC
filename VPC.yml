@@ -3,7 +3,7 @@ Parameters:
   VPCCidrBlock:
     Type: String
     Default: 10.0.0.0/25
-  Indiavpc:
+  VPCid:
     Description: this is for reference
     Type: String
     Default: IndiaVPC
@@ -36,5 +36,12 @@ Resources:
 
 Outputs:
   IndiaVPC:
-    Description: A ref to created VPC
+    Description: VPC ID
+    Export:
+      Name: VPCId
     Value: !Ref IndiaVPC
+  GatewayId:
+    Description: Gateway ID
+    Export:
+      Name: GateWayId
+    Value: !Ref OceanIGW

@@ -1,14 +1,12 @@
 # This YML creates Instances based on the regions for the VPC called India in all the subnets called States
 Parameters:
-   Indiavpc:
-    Description: this is for reference
-    Type: String
   VPCId:
     Description: Name of VPC Id from Output
     Type: String
   GatewayId:
     Description: Name of Gateway Id from Output
     Type: String
+    Default: GateWayId
 
   InstanceEnv:
     Description: This is for mapping the instance image and region
@@ -17,6 +15,10 @@ Parameters:
       - "Prod"
       - "Dev"
     ConstraintDescription: Allowed values are Dev or Prod
+  SubnetIdExportName1:
+    Description: Subnet Id for public subnet 1
+    Type: String
+    Default: subnets-Publicsubnet1
 
 Mappings:
   RegionAMI:
@@ -56,54 +58,73 @@ Mappings:
       AMI: ami-07b14488da8ea02a0
   EnvToInstanceType:
     Dev:
-      instanceType: t2.micro
-    Pro:
-      instanceType: t2.large
+      instanceType: "t2.micro"
+      name: "Dev"
+    Prod:
+      instanceType: "t2.micro"
+      name: "Prod"
 Resources:
   instanceMumbai:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
       ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-      VPCId: !Ref VPCId
-      GatewayId: !Ref GatewayId
-      SubnetId: 
-        
+      VPCId:
+        Fn::ImportValue: !Ref VPCId
+      GatewayId:
+        Fn::ImportValue: !Ref GatewayId
+      SubnetId:
+        Fn::ImportValue: !Ref SubnetIdExportName1
+  # Security group for !st instance
+  Securitygroup1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the jumpbox
+      GroupName: jumpbox SG1
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Tag
+      VpcId:
+        Fn::ImportValue: !Ref VPCId
 
-  instanceGujurat:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
-      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-      VPCId: 
-      GatewayId:
-      SubnetId: 
-      InstanceName:
-      InstanceKeyName:
-        
-  
-        
-  instanceLucknow:
-   Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
-      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-      VPCId: 
-      GatewayId:
-      SubnetId: 
-      InstanceName:
-        
-  
-    
-        
-  instanceAmritsar:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
-      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-      VPCId: 
-      GatewayId:
-      SubnetId: 
-      InstanceName:
-      InstanceKeyName:
-        
+  # instanceGujurat:
+  #   Type: AWS::EC2::Instance
+  #   Properties:
+  #     InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+  #     ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+  #     VPCId:
+  #     GatewayId:
+  #     SubnetId:
+  #     InstanceName:
+  #     InstanceKeyName:
+
+  # instanceLucknow:
+  #  Type: AWS::EC2::Instance
+  #   Properties:
+  #     InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+  #     ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+  #     VPCId:
+  #     GatewayId:
+  #     SubnetId:
+  #     InstanceName:
+
+  # instanceAmritsar:
+  #   Type: AWS::EC2::Instance
+  #   Properties:
+  #     InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+  #     ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+  #     VPCId:
+  #     GatewayId:
+  #     SubnetId:
+  #     InstanceName:
+  #     InstanceKeyName:
