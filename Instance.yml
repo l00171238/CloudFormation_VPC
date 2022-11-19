@@ -3,11 +3,11 @@ Parameters:
   VPCId:
     Description: Name of VPC Id from Output
     Type: String
+    Default: VPCId
   GatewayId:
     Description: Name of Gateway Id from Output
     Type: String
     Default: GateWayId
-
   InstanceEnv:
     Description: This is for mapping the instance image and region
     Type: String
@@ -18,7 +18,23 @@ Parameters:
   SubnetIdExportName1:
     Description: Subnet Id for public subnet 1
     Type: String
-    Default: subnets-Publicsubnet1
+    Default: Subnets-Publicsubnet1
+  SubnetIdExportName3:
+    Description: Subnet Id for private subnet 1
+    Type: String
+    Default: Subnets-Privatesubnet1
+  SubnetIdExportName2:
+    Description: Subnet Id for public subnet 1
+    Type: String
+    Default: Subnets-Publicsubnet2
+  SubnetIdExportName4:
+    Description: Subnet Id for private subnet 1
+    Type: String
+    Default: Subnets-Privatesubnet2
+  SSHKey:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: "AWS::EC2::KeyPair::KeyName"
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
 
 Mappings:
   RegionAMI:
@@ -68,16 +84,18 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType:
-        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceType]
       ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-      VPCId:
-        Fn::ImportValue: !Ref VPCId
-      GatewayId:
-        Fn::ImportValue: !Ref GatewayId
       SubnetId:
         Fn::ImportValue: !Ref SubnetIdExportName1
+      KeyName: !Ref SSHKey
+      SecurityGroupIds: [!Ref SecuritygroupPublic1]
+      Tags:
+        - Key: Name
+          Value: Jump server
+
   # Security group for !st instance
-  Securitygroup1:
+  SecuritygroupPublic1:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Security group for the jumpbox
@@ -92,39 +110,140 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
-      Tags:
-        - Tag
       VpcId:
         Fn::ImportValue: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: Jumpbox security group
 
-  # instanceGujurat:
-  #   Type: AWS::EC2::Instance
-  #   Properties:
-  #     InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
-  #     ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-  #     VPCId:
-  #     GatewayId:
-  #     SubnetId:
-  #     InstanceName:
-  #     InstanceKeyName:
+  # Private instance 1
+  instanceLucknow:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceType]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      SubnetId:
+        Fn::ImportValue: !Ref SubnetIdExportName3
+      KeyName: !Ref SSHKey
+      SecurityGroupIds: [!Ref SecuritygroupPrivate1]
+      Tags:
+        - Key: Name
+          Value: Backup server
 
-  # instanceLucknow:
-  #  Type: AWS::EC2::Instance
-  #   Properties:
-  #     InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
-  #     ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-  #     VPCId:
-  #     GatewayId:
-  #     SubnetId:
-  #     InstanceName:
+  # Security group for !st instance
+  SecuritygroupPrivate1:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the backup
+      GroupName: Backup-server-sg
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/27
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/27
+      VpcId:
+        Fn::ImportValue: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: backup server security  group
 
-  # instanceAmritsar:
-  #   Type: AWS::EC2::Instance
-  #   Properties:
-  #     InstanceType: !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceTye]
-  #     ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
-  #     VPCId:
-  #     GatewayId:
-  #     SubnetId:
-  #     InstanceName:
-  #     InstanceKeyName:
+  instanceAmtirsar:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceType]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      SubnetId:
+        Fn::ImportValue: !Ref SubnetIdExportName2
+      KeyName: !Ref SSHKey
+      SecurityGroupIds: [!Ref SecuritygroupPublic1]
+      Tags:
+        - Key: Name
+          Value: Nginx-server
+
+  # Security group for !st instance
+  SecuritygroupPublic2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the jumpbox
+      GroupName: Ngix-server SG3
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      VpcId:
+        Fn::ImportValue: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: Nginx security group
+
+  # Private instance 1
+  instanceAhmedabad:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType:
+        !FindInMap [EnvToInstanceType, !Ref "InstanceEnv", instanceType]
+      ImageId: !FindInMap [RegionAMI, !Ref "AWS::Region", AMI]
+      SubnetId:
+        Fn::ImportValue: !Ref SubnetIdExportName4
+      KeyName: !Ref SSHKey
+      SecurityGroupIds: [!Ref SecuritygroupPrivate1]
+      Tags:
+        - Key: Name
+          Value: webserver 2
+
+  # Security group for !st instance
+  SecuritygroupPrivate2:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for the backup
+      GroupName: webserver2-server-sg
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/27
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/27
+      VpcId:
+        Fn::ImportValue: !Ref VPCId
+      Tags:
+        - Key: Name
+          Value: webserver 2  server security  group
+
+Outputs:
+  InstanceName1:
+    Export:
+      Name:
+        "Fn::Sub": "${AWS::StackName}-Instance1"
+    Value: !Ref instanceMumbai
+  InstanceName2:
+    Export:
+      Name:
+        "Fn::Sub": "${AWS::StackName}-Instance2"
+    Value: !Ref instanceLucknow
+  InstanceName3:
+    Export:
+      Name:
+        "Fn::Sub": "${AWS::StackName}-Instance3"
+    Value: !Ref instanceAmtirsar
+  InstanceName4:
+    Export:
+      Name:
+        "Fn::Sub": "${AWS::StackName}-Instance"
+    Value: !Ref instanceAhmedabad

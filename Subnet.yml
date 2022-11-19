@@ -18,7 +18,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Public Subnet 1
+          Value: Maharashtra Public Subnet 1
       VpcId:
         Fn::ImportValue: VPCId
     # Public subnet 2
@@ -30,7 +30,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Public Subnet 2
+          Value: Uttar Pradesh Public Subnet 2
       VpcId:
         Fn::ImportValue: VPCId
       # PRivate subnet1
@@ -42,7 +42,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Private Subnet 1
+          Value: Gujurat Private Subnet 1
       VpcId:
         Fn::ImportValue: !Sub VPCId
     # Public subnet 2
@@ -54,7 +54,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: Private Subnet 2
+          Value: Punjab Private Subnet 2
       VpcId:
         Fn::ImportValue: VPCId
 
@@ -63,19 +63,19 @@ Outputs:
     Description: Public Subnet 1 ID
     Export:
       Name: !Sub ${AWS::StackName}-Publicsubnet1
-    Value: PublicSubnet1
+    Value: !Ref Pubsub1
   Publicsubnet2:
     Description: Public Subnet 2 ID
     Export:
       Name: !Sub ${AWS::StackName}-Publicsubnet2
-    Value: PublicSubnet 2
+    Value: !Ref Pubsub2
   Privatesubnet1:
     Description: Private Subnet 1 ID
     Export:
       Name: !Sub ${AWS::StackName}-Privatesubnet1
-    Value: PrivateSubnet1
+    Value: !Ref Prisub1
   Privatesubnet2:
     Description: Private Subnet 2 ID
     Export:
       Name: !Sub ${AWS::StackName}-Privatesubnet2
-    Value: PrivateSubnet2
+    Value: !Ref Prisub2
